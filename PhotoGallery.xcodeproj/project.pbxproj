@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		5D04DA251F8B46CA0023A89F /* ImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D04DA241F8B46CA0023A89F /* ImageViewController.swift */; };
+		5D04DA2E1F8B953F0023A89F /* Slide.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5D04DA2D1F8B953F0023A89F /* Slide.xib */; };
+		5D04DA301F8B955C0023A89F /* Slide.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D04DA2F1F8B955C0023A89F /* Slide.swift */; };
 		5D4DE8D91F8A7BEF008BB42E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4DE8D81F8A7BEF008BB42E /* AppDelegate.swift */; };
 		5D4DE8DE1F8A7BEF008BB42E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5D4DE8DC1F8A7BEF008BB42E /* Main.storyboard */; };
 		5D4DE8E01F8A7BEF008BB42E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5D4DE8DF1F8A7BEF008BB42E /* Assets.xcassets */; };
@@ -19,6 +21,8 @@
 
 /* Begin PBXFileReference section */
 		5D04DA241F8B46CA0023A89F /* ImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewController.swift; sourceTree = "<group>"; };
+		5D04DA2D1F8B953F0023A89F /* Slide.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = Slide.xib; sourceTree = "<group>"; };
+		5D04DA2F1F8B955C0023A89F /* Slide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Slide.swift; sourceTree = "<group>"; };
 		5D4DE8D51F8A7BEF008BB42E /* PhotoGallery.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoGallery.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D4DE8D81F8A7BEF008BB42E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5D4DE8DD1F8A7BEF008BB42E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -41,6 +45,32 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5D04DA2A1F8B8D4A0023A89F /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				5D04DA2D1F8B953F0023A89F /* Slide.xib */,
+				5D04DA2F1F8B955C0023A89F /* Slide.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		5D04DA2B1F8B8D6A0023A89F /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				5D4DE8EF1F8A8273008BB42E /* ItemCollectionViewController.swift */,
+				5D04DA241F8B46CA0023A89F /* ImageViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		5D04DA2C1F8B8D7A0023A89F /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				5D4DE8ED1F8A8228008BB42E /* Item.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 		5D4DE8CC1F8A7BEF008BB42E = {
 			isa = PBXGroup;
 			children = (
@@ -60,11 +90,11 @@
 		5D4DE8D71F8A7BEF008BB42E /* PhotoGallery */ = {
 			isa = PBXGroup;
 			children = (
-				5D4DE8EF1F8A8273008BB42E /* ItemCollectionViewController.swift */,
-				5D4DE8EB1F8A8124008BB42E /* ItemCollectionViewCell.swift */,
-				5D4DE8ED1F8A8228008BB42E /* Item.swift */,
-				5D04DA241F8B46CA0023A89F /* ImageViewController.swift */,
 				5D4DE8DC1F8A7BEF008BB42E /* Main.storyboard */,
+				5D04DA2C1F8B8D7A0023A89F /* Models */,
+				5D04DA2A1F8B8D4A0023A89F /* Views */,
+				5D04DA2B1F8B8D6A0023A89F /* Controllers */,
+				5D4DE8EB1F8A8124008BB42E /* ItemCollectionViewCell.swift */,
 				5D4DE8E41F8A7BEF008BB42E /* Info.plist */,
 				5D4DE8EA1F8A7FB3008BB42E /* Supporting Files */,
 			);
@@ -143,6 +173,7 @@
 				5D4DE8E31F8A7BEF008BB42E /* LaunchScreen.storyboard in Resources */,
 				5D4DE8E01F8A7BEF008BB42E /* Assets.xcassets in Resources */,
 				5D4DE8DE1F8A7BEF008BB42E /* Main.storyboard in Resources */,
+				5D04DA2E1F8B953F0023A89F /* Slide.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -156,6 +187,7 @@
 				5D4DE8D91F8A7BEF008BB42E /* AppDelegate.swift in Sources */,
 				5D4DE8EE1F8A8228008BB42E /* Item.swift in Sources */,
 				5D04DA251F8B46CA0023A89F /* ImageViewController.swift in Sources */,
+				5D04DA301F8B955C0023A89F /* Slide.swift in Sources */,
 				5D4DE8EC1F8A8124008BB42E /* ItemCollectionViewCell.swift in Sources */,
 				5D4DE8F01F8A8273008BB42E /* ItemCollectionViewController.swift in Sources */,
 			);

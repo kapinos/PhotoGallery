@@ -52,7 +52,10 @@ class ItemCollectionViewController: UICollectionViewController {
         if segue.identifier == "showItemDetail" {
             if let indexPaths = collectionView?.indexPathsForSelectedItems {
                 let destinationController = segue.destination as! ImageViewController
-                destinationController.item = itemsSet[indexPaths[0].row]
+                destinationController.currentPage = indexPaths[0].row
+                destinationController.items = itemsSet
+                
+                
                 collectionView?.deselectItem(at: indexPaths[0], animated: true)
             }
         }

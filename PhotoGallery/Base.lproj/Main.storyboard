@@ -82,11 +82,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="cOV-aI-CmD">
-                                <rect key="frame" x="169" y="315" width="37" height="37"/>
-                                <color key="color" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                            </activityIndicatorView>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AWH-IG-QbT">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AWH-IG-QbT">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                             </scrollView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MlM-Vq-Pek">
@@ -103,11 +99,9 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="cOV-aI-CmD" firstAttribute="centerX" secondItem="ycN-IA-gDa" secondAttribute="centerX" id="50u-rk-QjN"/>
                             <constraint firstAttribute="trailingMargin" secondItem="MlM-Vq-Pek" secondAttribute="trailing" constant="15" id="627-if-D9o"/>
                             <constraint firstItem="AWH-IG-QbT" firstAttribute="bottom" secondItem="aiv-Rn-GNx" secondAttribute="bottom" id="SHB-m2-KAs"/>
                             <constraint firstItem="MlM-Vq-Pek" firstAttribute="top" secondItem="ycN-IA-gDa" secondAttribute="topMargin" constant="15" id="oNE-uo-jyo"/>
-                            <constraint firstItem="cOV-aI-CmD" firstAttribute="centerY" secondItem="ycN-IA-gDa" secondAttribute="centerY" id="qkw-Wh-J59"/>
                             <constraint firstItem="AWH-IG-QbT" firstAttribute="leading" secondItem="ycN-IA-gDa" secondAttribute="leading" id="ut3-af-cCR"/>
                             <constraint firstItem="AWH-IG-QbT" firstAttribute="top" secondItem="ycN-IA-gDa" secondAttribute="top" id="wgc-m4-89M"/>
                             <constraint firstAttribute="trailing" secondItem="AWH-IG-QbT" secondAttribute="trailing" id="yd6-UO-KZK"/>
@@ -116,7 +110,6 @@
                     </view>
                     <connections>
                         <outlet property="scrollView" destination="AWH-IG-QbT" id="qfQ-LI-QU4"/>
-                        <outlet property="spinner" destination="cOV-aI-CmD" id="Yny-ml-zYO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fwc-l3-JtX" userLabel="First Responder" sceneMemberID="firstResponder"/>
