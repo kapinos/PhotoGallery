@@ -13,8 +13,13 @@ class ItemCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var titleLable: UILabel!
     
-    func configureCell(imageName: String, titleText: String) {
-        imageView.image = UIImage(named: imageName)
-        titleLable.text = titleText
+    func configureCell(image: UIImage, title: String) {
+        imageView.image = image
+        titleLable.text = title
+        
+        // sublayers of the layer that extend outside its boundaries clipped to those boundaries
+        imageView.contentMode = .scaleAspectFill
+        imageView.layer.masksToBounds = true
     }
 }
+

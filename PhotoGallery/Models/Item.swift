@@ -7,15 +7,16 @@
 //
 
 import Foundation
+import UIKit
 
 struct Item {
-    var name: String = ""
-    var title: String = ""
-    var isFeatured = false
     
-    init(name: String, title: String, isFeatured: Bool = false) {
-        self.name = name
+    var image = UIImage(named: "")
+    var title = ""
+
+    
+    init(image: UIImage, title: String) {
+        self.image = image
         self.title = title
-        self.isFeatured = isFeatured
     }
 }

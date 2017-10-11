@@ -22,7 +22,7 @@ class Slide: UIView {
     var item: Item? {
         didSet {
             guard let item = item else { return }
-            image = UIImage(named: item.name)
+            image = item.image
         }
     }
     

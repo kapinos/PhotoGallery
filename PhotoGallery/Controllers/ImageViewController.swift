@@ -10,10 +10,10 @@ import UIKit
 
 class ImageViewController: UIViewController, UIScrollViewDelegate {
     
-    @IBOutlet weak var scrollView: UIScrollView! {
+    @IBOutlet weak var scrollViewPages: UIScrollView! {
         didSet {
-            scrollView.delegate = self
-            scrollView.isPagingEnabled = true
+            scrollViewPages.delegate = self
+            scrollViewPages.isPagingEnabled = true
         }
     }
     
@@ -31,34 +31,28 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
         
         slides = createSlides()
         for slide in slides {
-            scrollView.addSubview(slide)
+            scrollViewPages.addSubview(slide)
         }
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        scrollView.contentSize = CGSize(width: scrollView.bounds.width * CGFloat(slides.count), height: scrollView.bounds.height)
+        scrollViewPages.contentSize = CGSize(width: scrollViewPages.bounds.width * CGFloat(slides.count), height: scrollViewPages.bounds.height)
         for (index, slide) in slides.enumerated() {
-            slide.frame = CGRect(x: scrollView.bounds.width * CGFloat(index),
+            slide.frame = CGRect(x: scrollViewPages.bounds.width * CGFloat(index),
                                  y: 0,
-                                 width:  scrollView.bounds.width,
-                                 height: scrollView.bounds.height)
+                                 width:  scrollViewPages.bounds.width,
+                                 height: scrollViewPages.bounds.height)
         }
         scrollViewReturnToPage(page: currentPage)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        currentPage = Int(round(scrollView.contentOffset.x / view.frame.width))
+        currentPage = Int(round(scrollViewPages.contentOffset.x / view.frame.width))
     }
     
     // MARK: - Delegates
-    
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        //let pageIndex = Int(round(scrollView.contentOffset.x / view.frame.width))
-        // FIX ME-CHECK idx
-       // let slide = slides[pageIndex]
-    }
     
    
     // MARK: - Inner Methods
@@ -74,9 +68,9 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
     }
     
     func scrollViewReturnToPage(page: Int) {
-        var frame:CGRect = scrollView.frame;
+        var frame:CGRect = scrollViewPages.frame;
         frame.origin.x = frame.size.width * CGFloat(page);
         frame.origin.y = 0;
-        scrollView.scrollRectToVisible(frame, animated: false)
+        scrollViewPages.scrollRectToVisible(frame, animated: false)
     }
 }
