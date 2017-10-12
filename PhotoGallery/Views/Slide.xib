@@ -29,7 +29,7 @@
             </constraints>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <connections>
-                <outlet property="scrollView" destination="Rqc-We-A8H" id="xLa-L4-aNT"/>
+                <outlet property="zoomingScrollView" destination="Rqc-We-A8H" id="Y3u-Zj-gni"/>
             </connections>
             <point key="canvasLocation" x="26.5" y="51.5"/>
         </view>

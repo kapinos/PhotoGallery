@@ -13,6 +13,8 @@ class ItemCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var titleLable: UILabel!
     
+    var assetIdentifier: String = ""
+    
     func configureCell(image: UIImage, title: String) {
         imageView.image = image
         titleLable.text = title

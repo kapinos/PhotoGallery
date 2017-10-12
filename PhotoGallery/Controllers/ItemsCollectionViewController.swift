@@ -10,14 +10,16 @@ import UIKit
 import Photos
 
 private let reuseIdentifier = "ItemCell"
+private let imageSizeForFetching = CGSize(width: 1024, height: 1024)
 
 class ItemsCollectionViewController: UICollectionViewController {
 
     // MARK: - Properties
     var assetCollection = PHAssetCollection()
-    var assets = PHFetchResult<PHAsset>()
-    private var itemsSet: [Item]!
-    
+    var fetchResult = PHFetchResult<PHAsset>()
+
+    // TODO: itemsSet
+    private var imageManager = PHCachingImageManager()
     
     // MARK: - Lifecycle
     
@@ -26,11 +28,8 @@ class ItemsCollectionViewController: UICollectionViewController {
 
         let fetchOptions = PHFetchOptions()
         fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
-        assets = PHAsset.fetchAssets(with: fetchOptions)
-        
-        // Register cell classes
-        // self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
-        
+        fetchResult = PHAsset.fetchAssets(with: fetchOptions)
+
         // FIXME: OBSERVER
     }
 
@@ -38,43 +37,41 @@ class ItemsCollectionViewController: UICollectionViewController {
         super.viewWillAppear(animated)
         self.clearsSelectionOnViewWillAppear = true
         self.navigationController?.hidesBarsOnTap = false
-        
-        // fetch images from assets // FIXME: fetch titles
-        itemsSet = getItemsFromAssets()
-        collectionView?.reloadData()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        // TODO: updateCashedAssets
+    }
     
-    // MARK: - UICollectionViewDataSource
+    // MARK: - UICollectionViewDataSource & UICollectionViewDelegate
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return itemsSet.count
+        return fetchResult.count
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! ItemCollectionViewCell
     
-        let item = itemsSet[indexPath.row]
-        // FIXME: optional image
-        cell.configureCell(image: item.image!, title: item.title)
-        
+        let asset = fetchResult.object(at: indexPath.item)
+        cell.assetIdentifier = asset.localIdentifier
+        // TODO: fetch titles
+        imageManager.requestImage(for: asset,
+                                targetSize: imageSizeForFetching,
+                                contentMode: .aspectFill,
+                                options: nil) { (image, error) in
+                                    if cell.assetIdentifier == asset.localIdentifier && image != nil {
+                                        cell.configureCell(image: image!, title: asset.localIdentifier)
+                                    }
+        }
         return cell
     }
+    
 
-    
-    // MARK: - UICollectionViewDelegate
-    
-    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if collectionView.cellForItem(at: indexPath) != nil {
-            let item = itemsSet[indexPath.row]
-        }
-    }
-    
-    
     // MARK: - Navigation
     
     @IBAction func unwindToHome(segue: UIStoryboardSegue) { }
@@ -84,31 +81,19 @@ class ItemsCollectionViewController: UICollectionViewController {
             if let indexPaths = collectionView?.indexPathsForSelectedItems {
                 // configure the view controller with the itemsSet
                 let destinationController = segue.destination as! ImageViewController
-                destinationController.currentPage = indexPaths[0].row
-                destinationController.items = itemsSet
+                let asset = fetchResult.object(at: indexPaths.first?.row ?? 0)
+                
+                destinationController.selectedAsset = asset
+                destinationController.fetchResult = fetchResult
+                destinationController.currentIndex = indexPaths.first?.row ?? 0
             }
         }
     }
+    // TODO: - Caching Asset images
+    // ll: 148 - AssetGridVC
     
     
     // MARK: - Inner Methods
-    
-    // fetch images in items from assets
-    private func getItemsFromAssets() -> [Item] {
-        var items: [Item] = []
-        for i in 0..<min(10_000, assets.count) {
-            let asset = assets[i] as PHAsset
-            // FIXME: set size fetched image
-            PHImageManager.default().requestImage(for: asset,
-                                                  targetSize: CGSize(width: 250.0, height: 250.0),
-                                                  contentMode: .aspectFill,
-                                                  options: nil,
-                                                  resultHandler: { (result, info) in
-                                                    items.append(Item(image: result!, title: "title"))
-            })
-        }
-        return items
-    }
     
     
     

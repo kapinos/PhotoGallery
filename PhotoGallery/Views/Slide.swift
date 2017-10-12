@@ -10,14 +10,7 @@ import UIKit
 
 class Slide: UIView {
 
-    @IBOutlet private weak var scrollView: UIScrollView! {
-        didSet {
-            scrollView.delegate = self
-            scrollView.minimumZoomScale = 0.01
-            scrollView.maximumZoomScale = 4
-            scrollView.addSubview(imageView)
-        }
-    }
+    // MARK: - Properties
     
     var item: Item? {
         didSet {
@@ -35,21 +28,41 @@ class Slide: UIView {
         set {
             imageView.image = newValue
             imageView.sizeToFit()
+            updateLayouts()
         }
     }
     
+    // MARK: - IBOutlets
+    
+    @IBOutlet private weak var zoomingScrollView: UIScrollView! {
+        didSet {
+            zoomingScrollView.delegate = self
+            zoomingScrollView.minimumZoomScale = 0.01
+            zoomingScrollView.maximumZoomScale = 4
+            zoomingScrollView.addSubview(imageView)
+        }
+    }
+    
+    // MARK: - Lifecycle
+    
     override func layoutSubviews() {
         super.layoutSubviews()
+        updateLayouts()
+    }
+    
+    // MARK: - Update Layouts for slides content
+    func updateLayouts() {
+        guard image != nil else { return }
         
-        scrollView.contentSize = scrollView.bounds.size
+        zoomingScrollView.contentSize = zoomingScrollView.bounds.size
         
-        let widthRatio = scrollView.bounds.size.width / imageView.bounds.size.width
-        let heightRatio = scrollView.bounds.size.height / imageView.bounds.size.height
+        let widthRatio = zoomingScrollView.bounds.size.width / imageView.bounds.size.width
+        let heightRatio = zoomingScrollView.bounds.size.height / imageView.bounds.size.height
         
-        scrollView.zoomScale = min(widthRatio, heightRatio)
-        scrollView.contentInset = UIEdgeInsets(top: (scrollView.bounds.size.height - imageView.frame.size.height) / 2,
-                                               left: (scrollView.bounds.size.width - imageView.frame.size.width) / 2,
-                                               bottom: 0, right: 0)
+        zoomingScrollView.zoomScale = min(widthRatio, heightRatio)
+        zoomingScrollView.contentInset = UIEdgeInsets(top: (zoomingScrollView.bounds.size.height - imageView.frame.size.height) / 2,
+                                                      left: (zoomingScrollView.bounds.size.width - imageView.frame.size.width) / 2,
+                                                      bottom: 0, right: 0)
     }
 }
 

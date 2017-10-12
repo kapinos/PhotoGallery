@@ -14,6 +14,7 @@ struct Item {
     var image = UIImage(named: "")
     var title = ""
 
+    init() { }
     
     init(image: UIImage, title: String) {
         self.image = image

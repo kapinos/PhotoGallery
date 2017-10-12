@@ -109,7 +109,7 @@
                         <viewLayoutGuide key="safeArea" id="aiv-Rn-GNx"/>
                     </view>
                     <connections>
-                        <outlet property="scrollViewPages" destination="AWH-IG-QbT" id="Iqz-6B-TkS"/>
+                        <outlet property="pagesScrollView" destination="AWH-IG-QbT" id="kUf-lo-8u5"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fwc-l3-JtX" userLabel="First Responder" sceneMemberID="firstResponder"/>
