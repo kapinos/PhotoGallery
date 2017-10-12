@@ -25,12 +25,15 @@ class ItemsCollectionViewController: UICollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        PHPhotoLibrary.shared().register(self)
 
         let fetchOptions = PHFetchOptions()
         fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
         fetchResult = PHAsset.fetchAssets(with: fetchOptions)
-
-        // FIXME: OBSERVER
+    }
+    
+    deinit {
+        PHPhotoLibrary.shared().unregisterChangeObserver(self)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -39,11 +42,6 @@ class ItemsCollectionViewController: UICollectionViewController {
         self.navigationController?.hidesBarsOnTap = false
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        // TODO: updateCashedAssets
-    }
-    
     // MARK: - UICollectionViewDataSource & UICollectionViewDelegate
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -92,40 +90,47 @@ class ItemsCollectionViewController: UICollectionViewController {
             }
         }
     }
-    // TODO: - Caching Asset images
-    // ll: 148 - AssetGridVC
-    
+
     
     // MARK: - Inner Methods
-    
-    
-    
-    /*
-    // Uncomment this method to specify if the specified item should be highlighted during tracking
-    override func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    */
 
-    /*
-    // Uncomment this method to specify if the specified item should be selected
-    override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    */
+}
 
-    /*
-    // Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
-    override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
-        return false
-    }
 
-    override func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
-        return false
-    }
+// MARK: PHPhotoLibraryChangeObserver
 
-    override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
-    
+extension ItemsCollectionViewController: PHPhotoLibraryChangeObserver {
+    func photoLibraryDidChange(_ changeInstance: PHChange) {
+        
+        guard let changes = changeInstance.changeDetails(for: fetchResult)
+            else { return }
+        
+        // Change notifications may be made on a background queue. Re-dispatch to the
+        // main queue before acting on the change as we'll be updating the UI.
+        DispatchQueue.main.sync {
+            // new fetch result
+            fetchResult = changes.fetchResultAfterChanges
+            if changes.hasIncrementalChanges {
+                // If we have incremental diffs, animate them in the collection view
+                guard let collectionView = self.collectionView else { fatalError() }
+                collectionView.performBatchUpdates({
+                    // updates must be in this order:
+                    // delete, insert, reload, move
+                    if let removed = changes.removedIndexes, !removed.isEmpty {
+                        collectionView.deleteItems(at: removed.map({ IndexPath(item: $0, section: 0) }))
+                    }
+                    if let inserted = changes.insertedIndexes, !inserted.isEmpty {
+                        collectionView.insertItems(at: inserted.map({ IndexPath(item: $0, section: 0) }))
+                    }
+                    changes.enumerateMoves { fromIndex, toIndex in
+                        collectionView.moveItem(at: IndexPath(item: fromIndex, section: 0),
+                                                to: IndexPath(item: toIndex, section: 0))
+                    }
+                })
+            } else {
+                // Reload the collection view
+                collectionView!.reloadData()
+            }
+        }
     }
-    */
 }

@@ -9,6 +9,8 @@
 import UIKit
 import Photos
 
+fileprivate let shiftForFetchingAssets = 2
+
 class ImageViewController: UIViewController, UIScrollViewDelegate {
 
     // MARK: - Properties
@@ -29,6 +31,7 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        PHPhotoLibrary.shared().register(self)
         
         let count = fetchResult.count
         pagesScrollView.contentSize = CGSize(width: pagesScrollView.bounds.width * CGFloat(count), height: pagesScrollView.bounds.height)
@@ -40,6 +43,10 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
         }
 
         scrollViewReturnToPage(page: currentIndex)
+    }
+    
+    deinit {
+        PHPhotoLibrary.shared().unregisterChangeObserver(self)
     }
 
     override func viewDidLayoutSubviews() {
@@ -63,18 +70,17 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
     // MARK: - Delegates
     
     // fetch current viewed image when scrolling with nearby images
-    // shift for downloading images = 2
+    // shift for downloading images = shiftForFetchingAssets
     private var currentPosition = -1
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let position = Int(scrollView.contentOffset.x / scrollView.bounds.size.width)
         if position == currentPosition { return }
         currentPosition = position
         
-        let shiftDownload = 2
         
         // set min/max borders for downloaded images
-        let minIndex = max(0, position-shiftDownload)
-        let maxIndex = min(position + shiftDownload, fetchResult.count-1)
+        let minIndex = max(0, position - shiftForFetchingAssets)
+        let maxIndex = min(position + shiftForFetchingAssets, fetchResult.count-1)
         
         // - clear images goes beyond currentPosition ±shift
         // - if image in the currentPosition ±shift - fetch it
@@ -88,7 +94,26 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
     }
     
     // MARK: - UI Actions
+    
     @IBAction func buttonTrashPressed(_ sender: UIBarButtonItem) {
+        let completion = { (success: Bool, error: Error?) -> Void in
+            if success {
+                PHPhotoLibrary.shared().unregisterChangeObserver(self)
+                DispatchQueue.main.sync {
+                    _ = self.navigationController!.popViewController(animated: true)
+                }
+            } else {
+                print("can't remove asset: \(String(describing: error))")
+            }
+        }
+
+        if fetchResult.count > 0 {
+            // Delete asset from library
+            PHPhotoLibrary.shared().performChanges({ [weak self] in
+                let asset = self?.fetchResult.object(at: (self?.currentPosition)!)
+                PHAssetChangeRequest.deleteAssets([asset!] as NSArray)
+                }, completionHandler: completion)
+        }
     }
     
    
@@ -124,7 +149,20 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
     }
 }
 
-
+// MARK: PHPhotoLibraryChangeObserver
+extension ImageViewController: PHPhotoLibraryChangeObserver {
+    func photoLibraryDidChange(_ changeInstance: PHChange) {
+        // Call might come on any background queue. Re-dispatch to the main queue to handle it
+        DispatchQueue.main.sync {
+            // Check if there are changes to the asset we're displaying
+            guard let details = changeInstance.changeDetails(for: selectedAsset) else { return }
+            guard let assetAfterChanges = details.objectAfterChanges as? PHAsset else { return }
+            
+            // Get the updated asset.
+            selectedAsset = assetAfterChanges
+        }
+    }
+}
 
 
 
