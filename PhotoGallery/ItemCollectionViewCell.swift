@@ -10,14 +10,14 @@ import UIKit
 
 class ItemCollectionViewCell: UICollectionViewCell {
     
-    @IBOutlet weak var imageView: UIImageView!
-    @IBOutlet weak var titleLable: UILabel!
+    @IBOutlet private weak var imageView: UIImageView!
+    @IBOutlet private weak var titleLable: UILabel!
     
     var assetIdentifier: String = ""
     
-    func configureCell(image: UIImage, title: String) {
-        imageView.image = image
-        titleLable.text = title
+    func configureCell(by item: Item) {
+        imageView.image = item.image
+        titleLable.text = item.title
         
         // sublayers of the layer that extend outside its boundaries clipped to those boundaries
         imageView.contentMode = .scaleAspectFill

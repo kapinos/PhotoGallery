@@ -15,7 +15,7 @@ private let imageSizeForFetching = CGSize(width: 512, height: 512)
 class ItemsCollectionViewController: UICollectionViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     // MARK: - Properties
-    var assetCollection = PHAssetCollection()
+    //var assetCollection = PHAssetCollection()
     var fetchResult = PHFetchResult<PHAsset>()
 
     // TODO: itemsSet
@@ -30,6 +30,8 @@ class ItemsCollectionViewController: UICollectionViewController, UIImagePickerCo
         let fetchOptions = PHFetchOptions()
         fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
         fetchResult = PHAsset.fetchAssets(with: fetchOptions)
+        
+        //UserDefaults.standard.removeObject(forKey: "TitlesForPhotos")
     }
     
     deinit {
@@ -40,6 +42,8 @@ class ItemsCollectionViewController: UICollectionViewController, UIImagePickerCo
         super.viewWillAppear(animated)
         self.clearsSelectionOnViewWillAppear = true
         self.navigationController?.hidesBarsOnTap = false
+        
+        collectionView?.reloadData()
     }
 
     // MARK: - UI Actions
@@ -77,13 +81,16 @@ class ItemsCollectionViewController: UICollectionViewController, UIImagePickerCo
         
         let asset = fetchResult.object(at: indexPath.item)
         cell.assetIdentifier = asset.localIdentifier
-        // TODO: fetch titles
+        
+        // fetch images and thier titles
         imageManager.requestImage(for: asset,
                                   targetSize: imageSizeForFetching,
                                   contentMode: .aspectFill,
                                   options: nil) { (image, error) in
                                     if cell.assetIdentifier == asset.localIdentifier && image != nil {
-                                        cell.configureCell(image: image!, title: asset.localIdentifier)
+                                        let title = PhotosManager.sharedInstance.getTitle(by: asset.localIdentifier)
+                                        let item = Item(image: image!, assetIdentifier: asset.localIdentifier, title: title)
+                                        cell.configureCell(by: item)
                                     }
         }
         return cell
@@ -131,7 +138,13 @@ class ItemsCollectionViewController: UICollectionViewController, UIImagePickerCo
 
     
     // MARK: - Inner Methods
-
+    private func scrollCollectionToBottom() {
+        let lastSectionIndex = (collectionView?.numberOfSections ?? 1) - 1
+        let lastItemIndex = (collectionView?.numberOfItems(inSection: lastSectionIndex) ?? 1) - 1
+        let indexPath = IndexPath(item: lastItemIndex, section: lastSectionIndex)
+        
+        collectionView?.scrollToItem(at: indexPath, at: .bottom, animated: true)
+    }
 }
 
 

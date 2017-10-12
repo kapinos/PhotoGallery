@@ -18,6 +18,7 @@
 		5D4DE8EC1F8A8124008BB42E /* ItemCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4DE8EB1F8A8124008BB42E /* ItemCollectionViewCell.swift */; };
 		5D4DE8EE1F8A8228008BB42E /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4DE8ED1F8A8228008BB42E /* Item.swift */; };
 		5D4DE8F01F8A8273008BB42E /* ItemsCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4DE8EF1F8A8273008BB42E /* ItemsCollectionViewController.swift */; };
+		5DD421DF1F90058100A17EC0 /* PhotosManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DD421DE1F90058100A17EC0 /* PhotosManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +35,7 @@
 		5D4DE8EB1F8A8124008BB42E /* ItemCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemCollectionViewCell.swift; sourceTree = "<group>"; };
 		5D4DE8ED1F8A8228008BB42E /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		5D4DE8EF1F8A8273008BB42E /* ItemsCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemsCollectionViewController.swift; sourceTree = "<group>"; };
+		5DD421DE1F90058100A17EC0 /* PhotosManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +72,7 @@
 			isa = PBXGroup;
 			children = (
 				5D4DE8ED1F8A8228008BB42E /* Item.swift */,
+				5DD421DE1F90058100A17EC0 /* PhotosManager.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -198,6 +201,7 @@
 			files = (
 				5D4DE8D91F8A7BEF008BB42E /* AppDelegate.swift in Sources */,
 				5D4DE8EE1F8A8228008BB42E /* Item.swift in Sources */,
+				5DD421DF1F90058100A17EC0 /* PhotosManager.swift in Sources */,
 				5D04DA251F8B46CA0023A89F /* ImageViewController.swift in Sources */,
 				5D04DA301F8B955C0023A89F /* Slide.swift in Sources */,
 				5D4DE8EC1F8A8124008BB42E /* ItemCollectionViewCell.swift in Sources */,

@@ -13,11 +13,13 @@ struct Item {
     
     var image = UIImage(named: "")
     var title = ""
-
+    var assetIdentifier = ""
+    
     init() { }
     
-    init(image: UIImage, title: String) {
+    init(image: UIImage, assetIdentifier: String, title: String) {
         self.image = image
+        self.assetIdentifier = assetIdentifier
         self.title = title
     }
 }

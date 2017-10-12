@@ -106,6 +106,12 @@
                                 <action selector="buttonTrashPressed:" destination="xdA-cI-9Lc" id="C3U-PW-hHg"/>
                             </connections>
                         </barButtonItem>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="9ap-0t-G23"/>
+                        <barButtonItem title="Edit Title" id="bGy-Nf-zUA">
+                            <connections>
+                                <action selector="buttonEditTitlePressed:" destination="xdA-cI-9Lc" id="poM-V8-Y8r"/>
+                            </connections>
+                        </barButtonItem>
                     </toolbarItems>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>

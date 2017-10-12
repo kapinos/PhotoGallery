@@ -32,6 +32,11 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         PHPhotoLibrary.shared().register(self)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(applicationDidEnterBackground),
+                                               name: NSNotification.Name.UIApplicationDidEnterBackground,
+                                               object: nil)
+        
         
         let count = fetchResult.count
         pagesScrollView.contentSize = CGSize(width: pagesScrollView.bounds.width * CGFloat(count), height: pagesScrollView.bounds.height)
@@ -41,14 +46,18 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
             slides.append(slide)
             pagesScrollView.addSubview(slide)
         }
-
-        scrollViewReturnToPage(page: currentIndex)
     }
     
     deinit {
         PHPhotoLibrary.shared().unregisterChangeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        applicationDidEnterBackground()
+    }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
@@ -91,9 +100,29 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
                 fetchImage(at: index)
             }
         }
+        self.title = slides[currentPosition].item?.title
     }
     
     // MARK: - UI Actions
+    
+    @IBAction func buttonEditTitlePressed(_ sender: UIBarButtonItem) {
+        let alert = UIAlertController(title: "Input new title to photo",
+                                      message: "",
+                                      preferredStyle: .alert)
+        
+        let saveAction = UIAlertAction(title: "Save", style: .default) { [unowned self] action in
+            guard let textField = alert.textFields?.first,
+                let newTitle = textField.text else { return }
+            self.replace(newTitle)
+        }
+        alert.addTextField { (textField : UITextField!) -> Void in textField.placeholder = "Add a new name" }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .default) { (action: UIAlertAction) in }
+        alert.addAction(saveAction)
+        alert.addAction(cancelAction)
+        
+        self.present(alert, animated: true, completion: nil)
+    }
     
     @IBAction func buttonTrashPressed(_ sender: UIBarButtonItem) {
         let completion = { (success: Bool, error: Error?) -> Void in
@@ -119,6 +148,13 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
    
     // MARK: - Inner Methods
     
+    private func replace(_ title: String)  {
+        guard let assetIdentifier = slides[currentPosition].item?.assetIdentifier else { return }
+        PhotosManager.sharedInstance.setTitle(with: assetIdentifier, title: title)
+        self.title = title
+        slides[currentPosition].item?.title = title
+    }
+    
     // init for creating slides for Array
     private func makeEmptySlide() -> Slide {
         return Bundle.main.loadNibNamed("Slide", owner: self, options: nil)?.first as! Slide
@@ -132,20 +168,30 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
         let options = PHImageRequestOptions()
         options.deliveryMode = .highQualityFormat
         
-        PHCachingImageManager.default().requestImage(for: asset,
-                                                     targetSize: CGSize(width: 1920, height: 1080),
-                                                     contentMode: .aspectFit,
-                                                     options: options) { [weak self] (image, error) in
-                                                        guard let itemImage = image else { return }
-                                                        self?.slides[index].item = Item(image: itemImage, title: "\(index)")
+        PHCachingImageManager.default().requestImage(for: asset, targetSize: CGSize(width: 1920, height: 1080), contentMode: .aspectFit, options: options) { [weak self] (image, error) in
+            guard let itemImage = image else { return }
+            let title = PhotosManager.sharedInstance.getTitle(by: asset.localIdentifier)
+            let item = Item(image: itemImage, assetIdentifier: asset.localIdentifier, title: title)
+            self?.slides[index].item = item
+            // update title
+            if self?.currentPosition == index {
+                self?.title = title
+            }
         }
     }
     
     func scrollViewReturnToPage(page: Int) {
-        var frame:CGRect = pagesScrollView.frame;
-        frame.origin.x = frame.size.width * CGFloat(page);
-        frame.origin.y = 0;
-        pagesScrollView.scrollRectToVisible(frame, animated: false)
+        let offsetX = pagesScrollView.frame.size.width * CGFloat(page)
+        // force scroll (if start and finish position are equal)
+        if offsetX == pagesScrollView.contentOffset.x {
+            pagesScrollView.contentOffset = CGPoint(x: offsetX - 1, y:0)
+        }
+        pagesScrollView.contentOffset = CGPoint(x: offsetX, y:0)
+    }
+    
+    // MARK: - AppDidEnterBackground
+    @objc private func applicationDidEnterBackground() {
+        PhotosManager.sharedInstance.save()
     }
 }
 
