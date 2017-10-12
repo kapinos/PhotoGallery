@@ -10,9 +10,9 @@ import UIKit
 import Photos
 
 private let reuseIdentifier = "ItemCell"
-private let imageSizeForFetching = CGSize(width: 1024, height: 1024)
+private let imageSizeForFetching = CGSize(width: 512, height: 512)
 
-class ItemsCollectionViewController: UICollectionViewController {
+class ItemsCollectionViewController: UICollectionViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     // MARK: - Properties
     var assetCollection = PHAssetCollection()
@@ -42,26 +42,46 @@ class ItemsCollectionViewController: UICollectionViewController {
         self.navigationController?.hidesBarsOnTap = false
     }
 
+    // MARK: - UI Actions
+    
+    @IBAction func buttonCameraPressed(_ sender: UIBarButtonItem) {
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            let picker: UIImagePickerController = UIImagePickerController()
+            picker.sourceType = .camera
+            picker.delegate = self
+            picker.allowsEditing = false
+            self.present(picker, animated: true, completion: nil)
+            
+        } else {
+            // no camera
+            let alertController = UIAlertController(title: "Error", message: "No camera is available", preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: "OK", style: .default) {
+                (result: UIAlertAction) in alertController.dismiss(animated: true, completion: nil)
+            })
+            self.present(alertController, animated: true, completion: nil)
+        }
+    }
+    
     // MARK: - UICollectionViewDataSource & UICollectionViewDelegate
-
+    
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
-
+    
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return fetchResult.count
     }
-
+    
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! ItemCollectionViewCell
-    
+        
         let asset = fetchResult.object(at: indexPath.item)
         cell.assetIdentifier = asset.localIdentifier
         // TODO: fetch titles
         imageManager.requestImage(for: asset,
-                                targetSize: imageSizeForFetching,
-                                contentMode: .aspectFill,
-                                options: nil) { (image, error) in
+                                  targetSize: imageSizeForFetching,
+                                  contentMode: .aspectFill,
+                                  options: nil) { (image, error) in
                                     if cell.assetIdentifier == asset.localIdentifier && image != nil {
                                         cell.configureCell(image: image!, title: asset.localIdentifier)
                                     }
@@ -69,9 +89,27 @@ class ItemsCollectionViewController: UICollectionViewController {
         return cell
     }
     
-    // MARK: - UI Actions
     
-    @IBAction func buttonCameraPressed(_ sender: UIBarButtonItem) {
+    // MARK : - UIImagePickerControllerDelegate
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        
+        let image = info["UIImagePickerControllerOriginalImage"] as! UIImage
+        
+        PHPhotoLibrary.shared().performChanges({
+            PHAssetChangeRequest.creationRequestForAsset(from: image)
+        }) { (success, error) in
+            if success {
+                print("Successfully added")
+            } else {
+                print("can't add asset: \(String(describing: error))")
+            }
+        }
+        picker.dismiss(animated: true, completion: nil)
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true, completion: nil)
     }
     
 
