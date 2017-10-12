@@ -6,7 +6,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -59,7 +58,7 @@
                                 <connections>
                                     <outlet property="imageView" destination="lfw-ke-m7g" id="7t5-Zj-6DS"/>
                                     <outlet property="titleLable" destination="3HE-Ac-Qse" id="sf0-BN-1Sg"/>
-                                    <segue destination="xdA-cI-9Lc" kind="presentation" identifier="showItemDetail" id="iW9-Md-1ds"/>
+                                    <segue destination="xdA-cI-9Lc" kind="show" identifier="showItemDetail" id="iW9-Md-1ds"/>
                                 </connections>
                             </collectionViewCell>
                         </cells>
@@ -68,7 +67,13 @@
                             <outlet property="delegate" destination="vwa-qs-EjX" id="XZ0-aa-Scb"/>
                         </connections>
                     </collectionView>
-                    <navigationItem key="navigationItem" id="y15-nY-fI6"/>
+                    <navigationItem key="navigationItem" id="y15-nY-fI6">
+                        <barButtonItem key="rightBarButtonItem" systemItem="camera" id="WZV-oW-j1P">
+                            <connections>
+                                <action selector="buttonCameraPressed:" destination="vwa-qs-EjX" id="1dB-U5-e3m"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bqL-8D-NPw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -83,37 +88,31 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AWH-IG-QbT">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <rect key="frame" x="0.0" y="64" width="375" height="559"/>
                             </scrollView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MlM-Vq-Pek">
-                                <rect key="frame" x="320" y="35" width="24" height="24"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="24" id="2rz-Je-igk"/>
-                                    <constraint firstAttribute="width" constant="24" id="leZ-uM-bJA"/>
-                                </constraints>
-                                <state key="normal" title="Button" image="closeIcon"/>
-                                <connections>
-                                    <segue destination="S32-5A-x4y" kind="unwind" unwindAction="unwindToHomeWithSegue:" id="iwI-5V-sFq"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="trailingMargin" secondItem="MlM-Vq-Pek" secondAttribute="trailing" constant="15" id="627-if-D9o"/>
                             <constraint firstItem="AWH-IG-QbT" firstAttribute="bottom" secondItem="aiv-Rn-GNx" secondAttribute="bottom" id="SHB-m2-KAs"/>
-                            <constraint firstItem="MlM-Vq-Pek" firstAttribute="top" secondItem="ycN-IA-gDa" secondAttribute="topMargin" constant="15" id="oNE-uo-jyo"/>
+                            <constraint firstItem="AWH-IG-QbT" firstAttribute="top" secondItem="aiv-Rn-GNx" secondAttribute="top" id="ZBB-Wf-qcn"/>
                             <constraint firstItem="AWH-IG-QbT" firstAttribute="leading" secondItem="ycN-IA-gDa" secondAttribute="leading" id="ut3-af-cCR"/>
-                            <constraint firstItem="AWH-IG-QbT" firstAttribute="top" secondItem="ycN-IA-gDa" secondAttribute="top" id="wgc-m4-89M"/>
                             <constraint firstAttribute="trailing" secondItem="AWH-IG-QbT" secondAttribute="trailing" id="yd6-UO-KZK"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="aiv-Rn-GNx"/>
                     </view>
+                    <toolbarItems>
+                        <barButtonItem systemItem="trash" id="Fgh-sq-TDx">
+                            <connections>
+                                <action selector="buttonTrashPressed:" destination="xdA-cI-9Lc" id="C3U-PW-hHg"/>
+                            </connections>
+                        </barButtonItem>
+                    </toolbarItems>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="pagesScrollView" destination="AWH-IG-QbT" id="kUf-lo-8u5"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fwc-l3-JtX" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <exit id="S32-5A-x4y" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
             <point key="canvasLocation" x="967.20000000000005" y="116.49175412293854"/>
         </scene>
@@ -140,7 +139,4 @@
             <point key="canvasLocation" x="-558" y="116"/>
         </scene>
     </scenes>
-    <resources>
-        <image name="closeIcon" width="335" height="330"/>
-    </resources>
 </document>

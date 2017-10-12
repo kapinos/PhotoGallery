@@ -71,10 +71,13 @@ class ItemsCollectionViewController: UICollectionViewController {
         return cell
     }
     
+    // MARK: - UI Actions
+    
+    @IBAction func buttonCameraPressed(_ sender: UIBarButtonItem) {
+    }
+    
 
     // MARK: - Navigation
-    
-    @IBAction func unwindToHome(segue: UIStoryboardSegue) { }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showItemDetail" {

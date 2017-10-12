@@ -87,6 +87,10 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
         }
     }
     
+    // MARK: - UI Actions
+    @IBAction func buttonTrashPressed(_ sender: UIBarButtonItem) {
+    }
+    
    
     // MARK: - Inner Methods
     
