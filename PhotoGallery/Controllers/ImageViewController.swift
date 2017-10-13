@@ -101,8 +101,8 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
                 fetchImage(at: index)
             }
         }
-        //if currentPosition > minIndex { return }
-        self.title = slides[currentPosition].item?.title
+        
+        self.title = (currentPosition > fetchResult.count-1) ? "" : slides[currentPosition].item?.title
     }
     
     // MARK: - UI Actions
