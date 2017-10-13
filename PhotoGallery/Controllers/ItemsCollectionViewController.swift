@@ -15,23 +15,22 @@ private let imageSizeForFetching = CGSize(width: 512, height: 512)
 class ItemsCollectionViewController: UICollectionViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     // MARK: - Properties
-    //var assetCollection = PHAssetCollection()
     var fetchResult = PHFetchResult<PHAsset>()
-
-    // TODO: itemsSet
-    private var imageManager = PHCachingImageManager()
+    private let customNavigationAnimationController = CustomNavigationAnimationController()
     
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.collectionView?.contentInset = UIEdgeInsets(top: 15, left: 15, bottom: 15, right: 15)
+        self.configureNavigationController()
+        
         PHPhotoLibrary.shared().register(self)
-
+        
+        // caching images
         let fetchOptions = PHFetchOptions()
         fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
         fetchResult = PHAsset.fetchAssets(with: fetchOptions)
-        
-        //UserDefaults.standard.removeObject(forKey: "TitlesForPhotos")
     }
     
     deinit {
@@ -41,7 +40,7 @@ class ItemsCollectionViewController: UICollectionViewController, UIImagePickerCo
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.clearsSelectionOnViewWillAppear = true
-        self.navigationController?.hidesBarsOnTap = false
+        self.navigationController?.setToolbarHidden(true, animated: false)
         
         collectionView?.reloadData()
     }
@@ -58,7 +57,7 @@ class ItemsCollectionViewController: UICollectionViewController, UIImagePickerCo
             
         } else {
             // no camera
-            let alertController = UIAlertController(title: "Error", message: "No camera is available", preferredStyle: .alert)
+            let alertController = UIAlertController(title: "Error", message: "No camera is available. Use it on device", preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: "OK", style: .default) {
                 (result: UIAlertAction) in alertController.dismiss(animated: true, completion: nil)
             })
@@ -83,15 +82,12 @@ class ItemsCollectionViewController: UICollectionViewController, UIImagePickerCo
         cell.assetIdentifier = asset.localIdentifier
         
         // fetch images and thier titles
-        imageManager.requestImage(for: asset,
-                                  targetSize: imageSizeForFetching,
-                                  contentMode: .aspectFill,
-                                  options: nil) { (image, error) in
-                                    if cell.assetIdentifier == asset.localIdentifier && image != nil {
-                                        let title = PhotosManager.sharedInstance.getTitle(by: asset.localIdentifier)
-                                        let item = Item(image: image!, assetIdentifier: asset.localIdentifier, title: title)
-                                        cell.configureCell(by: item)
-                                    }
+        PHCachingImageManager.default().requestImage(for: asset, targetSize: imageSizeForFetching, contentMode: .aspectFill, options: nil) { (image, error) in
+            if cell.assetIdentifier == asset.localIdentifier && image != nil {
+                let title = PhotosManager.sharedInstance.getTitle(by: asset.localIdentifier)
+                let item = Item(image: image!, assetIdentifier: asset.localIdentifier, title: title)
+                cell.configureCell(by: item)
+            }
         }
         return cell
     }
@@ -138,12 +134,26 @@ class ItemsCollectionViewController: UICollectionViewController, UIImagePickerCo
 
     
     // MARK: - Inner Methods
+    
+    private func configureNavigationController()  {
+        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+        self.navigationController?.delegate = self
+        self.navigationController?.setToolbarHidden(true, animated: false)
+    }
+    
     private func scrollCollectionToBottom() {
         let lastSectionIndex = (collectionView?.numberOfSections ?? 1) - 1
         let lastItemIndex = (collectionView?.numberOfItems(inSection: lastSectionIndex) ?? 1) - 1
         let indexPath = IndexPath(item: lastItemIndex, section: lastSectionIndex)
         
         collectionView?.scrollToItem(at: indexPath, at: .bottom, animated: true)
+    }
+    
+    // MARK: - Animation
+    
+    func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationControllerOperation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        customNavigationAnimationController.reverse = operation == .pop
+        return customNavigationAnimationController
     }
 }
 

@@ -31,6 +31,8 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.navigationController?.setToolbarHidden(false, animated: false)
+        
         PHPhotoLibrary.shared().register(self)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(applicationDidEnterBackground),
@@ -86,7 +88,6 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
         if position == currentPosition { return }
         currentPosition = position
         
-        
         // set min/max borders for downloaded images
         let minIndex = max(0, position - shiftForFetchingAssets)
         let maxIndex = min(position + shiftForFetchingAssets, fetchResult.count-1)
@@ -100,6 +101,7 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
                 fetchImage(at: index)
             }
         }
+        //if currentPosition > minIndex { return }
         self.title = slides[currentPosition].item?.title
     }
     
