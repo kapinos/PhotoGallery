@@ -86,6 +86,7 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let position = Int(scrollView.contentOffset.x / scrollView.bounds.size.width)
         if position == currentPosition { return }
+        if position < 0 || position >= fetchResult.count { return }
         currentPosition = position
         
         // set min/max borders for downloaded images
@@ -102,7 +103,7 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
             }
         }
         
-        self.title = (currentPosition > fetchResult.count-1) ? "" : slides[currentPosition].item?.title
+        self.title = slides[currentPosition].item?.title
     }
     
     // MARK: - UI Actions
@@ -204,7 +205,7 @@ extension ImageViewController: PHPhotoLibraryChangeObserver {
         DispatchQueue.main.sync {
             // Check if there are changes to the asset we're displaying
             guard let details = changeInstance.changeDetails(for: selectedAsset) else { return }
-            guard let assetAfterChanges = details.objectAfterChanges as? PHAsset else { return }
+            guard let assetAfterChanges = details.objectAfterChanges else { return }
             
             // Get the updated asset.
             selectedAsset = assetAfterChanges
