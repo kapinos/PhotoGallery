@@ -12,7 +12,7 @@ import AlamofireImage
 
 private let reuseIdentifier = "ItemCell"
 
-class DownloadedItemsCollectionViewController: UICollectionViewController {
+class DownloadedItemsCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     
     // MARK: - Properties
     var tagForSearchingPhoto = ""
@@ -36,7 +36,9 @@ class DownloadedItemsCollectionViewController: UICollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.collectionView?.contentInset = UIEdgeInsets(top: 15, left: 15, bottom: 15, right: 15)
+        
+        self.configureLayoutGrid()
+        
         self.collectionView?.allowsMultipleSelection = true
         
         shouldHideActionItem(true)
@@ -102,6 +104,7 @@ class DownloadedItemsCollectionViewController: UICollectionViewController {
         }
         return true
     }
+
     
     // MARK: - UI Actions
     
@@ -122,8 +125,23 @@ class DownloadedItemsCollectionViewController: UICollectionViewController {
     }
     
     // MARK: - Inner Methods
+    
+    //  FlowLayout
+    private func configureLayoutGrid() {
+        let inset: CGFloat = 10.0
+        let itemsSize = UIScreen.main.bounds.width - inset * 4 // left + rigt + betweenItems * 2
+        let itemSize = itemsSize / 3
+        
+        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top: inset, left: inset, bottom: inset, right: inset)
+        layout.itemSize = CGSize(width: itemSize, height: itemSize)
+        layout.minimumInteritemSpacing = inset
+        layout.minimumLineSpacing = inset
+        
+        collectionView!.collectionViewLayout = layout
+    }
+    
     private func shouldHideActionItem(_ hide: Bool)  {
-        //actionUploadPhotos.tintColor = hide ? UIColor.clear : UIColor.blue
         actionDownloadPhotos.isEnabled = !hide
     }
 }

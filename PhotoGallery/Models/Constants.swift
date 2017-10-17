@@ -16,4 +16,4 @@ let DEFAULT_IMAGES_SEARCH = "\(BASE_URL)?key=\(API_KEY)&image_type=photo&q="
 
 let COLOUR_SELECTED_PHOTO = UIColor.blue
 
-let IMAGE_SIZE_FOR_FETCHING = CGSize(width: 512, height: 512)
+let IMAGE_SIZE_FOR_FETCHING = CGSize(width: 128, height: 128)

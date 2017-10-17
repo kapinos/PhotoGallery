@@ -13,7 +13,7 @@ import AlamofireImage
 
 private let reuseIdentifier = "ItemCell"
 
-class MasterCollectionViewController: UICollectionViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class MasterCollectionViewController: UICollectionViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UICollectionViewDelegateFlowLayout {
 
     // MARK: - Properties
     var fetchResult = PHFetchResult<PHAsset>()
@@ -24,9 +24,10 @@ class MasterCollectionViewController: UICollectionViewController, UIImagePickerC
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.collectionView?.contentInset = UIEdgeInsets(top: 15, left: 15, bottom: 15, right: 15)
+        
         self.collectionView?.alwaysBounceVertical = true
         self.configureNavigationController()
+        self.configureLayoutGrid()
         
         PHPhotoLibrary.shared().register(self)
         
@@ -46,7 +47,6 @@ class MasterCollectionViewController: UICollectionViewController, UIImagePickerC
         
         collectionView?.reloadData()
         self.navigationController?.toolbar.isHidden = true
-//        scrollCollectionToBottom()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -186,6 +186,21 @@ class MasterCollectionViewController: UICollectionViewController, UIImagePickerC
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         self.navigationController?.delegate = self
         self.navigationController?.toolbar.isHidden = true
+    }
+    
+    //  FlowLayout
+    private func configureLayoutGrid() {
+        let inset: CGFloat = 10.0
+        let itemsSize = UIScreen.main.bounds.width - inset * 4 // left + rigt + betweenItems * 2
+        let itemSize = itemsSize / 3
+        
+        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top: inset, left: inset, bottom: inset, right: inset)
+        layout.itemSize = CGSize(width: itemSize, height: itemSize)
+        layout.minimumInteritemSpacing = inset
+        layout.minimumLineSpacing = inset
+        
+        collectionView!.collectionViewLayout = layout
     }
     
     private func scrollCollectionToBottom() {
