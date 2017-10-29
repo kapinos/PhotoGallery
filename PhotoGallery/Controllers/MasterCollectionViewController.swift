@@ -13,21 +13,22 @@ import AlamofireImage
 
 private let reuseIdentifier = "ItemCell"
 
-class MasterCollectionViewController: UICollectionViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UICollectionViewDelegateFlowLayout {
+class MasterCollectionViewController: UICollectionViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate {
 
     // MARK: - Properties
-    var fetchResult = PHFetchResult<PHAsset>()
+    private var fetchResult = PHFetchResult<PHAsset>()
+    private var fetchCollection: [PHAsset] = []
     var selectedPhotosForUpload: [Photo] = []
     private let customNavigationAnimationController = CustomNavigationAnimationController()
     
     // MARK: - Lifecycle
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.collectionView?.alwaysBounceVertical = true
         self.configureNavigationController()
         self.configureLayoutGrid()
+        self.configureLongPressGestureRecognizer()
         
         PHPhotoLibrary.shared().register(self)
         
@@ -35,6 +36,9 @@ class MasterCollectionViewController: UICollectionViewController, UIImagePickerC
         let fetchOptions = PHFetchOptions()
         fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
         fetchResult = PHAsset.fetchAssets(with: fetchOptions)
+        for i in 0..<fetchResult.count {
+            fetchCollection.append(fetchResult[i])
+        }
     }
     
     deinit {
@@ -47,6 +51,7 @@ class MasterCollectionViewController: UICollectionViewController, UIImagePickerC
         
         collectionView?.reloadData()
         self.navigationController?.toolbar.isHidden = true
+        self.scrollCollectionToBottom()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -55,8 +60,8 @@ class MasterCollectionViewController: UICollectionViewController, UIImagePickerC
     }
 
     // MARK: - UI Actions
-    
-    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+
+    @IBAction func searchButtonPressed(_ sender: UIBarButtonItem) {
         let alert = UIAlertController(title: "Input tag for searching photos", message: "", preferredStyle: .alert)
         
         let saveAction = UIAlertAction(title: "Find", style: .default) { [unowned self] action in
@@ -81,7 +86,6 @@ class MasterCollectionViewController: UICollectionViewController, UIImagePickerC
             picker.delegate = self
             picker.allowsEditing = false
             self.present(picker, animated: true, completion: nil)
-            
         } else {
             // no camera
             let alertController = UIAlertController(title: "Error", message: "No camera is available. Use it on device", preferredStyle: .alert)
@@ -99,13 +103,13 @@ class MasterCollectionViewController: UICollectionViewController, UIImagePickerC
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return fetchResult.count
+        return fetchCollection.count
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! MasterCollectionViewCell
         
-        let asset = fetchResult.object(at: indexPath.item)
+        let asset = fetchCollection[indexPath.item]
         cell.assetIdentifier = asset.localIdentifier
         
         // fetch images and thier titles
@@ -118,7 +122,7 @@ class MasterCollectionViewController: UICollectionViewController, UIImagePickerC
         }
         return cell
     }
-    
+
     
     // MARK : - UIImagePickerControllerDelegate
     
@@ -147,6 +151,7 @@ class MasterCollectionViewController: UICollectionViewController, UIImagePickerC
 
     // MARK: - Navigation
     
+    // Download selected Photos by Tag from Previous Contoller and Adding them To Gallery
     @IBAction func unwindSegueToMasterVC(_ sender: UIStoryboardSegue) {
         if let source = sender.source as? DownloadedItemsCollectionViewController {
             selectedPhotosForUpload = source.selectedPhotos
@@ -163,10 +168,10 @@ class MasterCollectionViewController: UICollectionViewController, UIImagePickerC
                 if let indexPaths = collectionView?.indexPathsForSelectedItems {
                     // configure the view controller with the itemsSet
                     let destinationController = segue.destination as! ImageViewController
-                    let asset = fetchResult.object(at: indexPaths.first?.row ?? 0)
+                    let asset = fetchCollection[indexPaths.first?.row ?? 0]
                     
                     destinationController.selectedAsset = asset
-                    destinationController.fetchResult = fetchResult
+                    destinationController.fetchCollection = fetchCollection
                     destinationController.currentIndex = indexPaths.first?.row ?? 0
                 }
             case "downloadPhotosByTag":
@@ -204,11 +209,13 @@ class MasterCollectionViewController: UICollectionViewController, UIImagePickerC
     }
     
     private func scrollCollectionToBottom() {
-        guard let sectionsCount = collectionView?.numberOfSections, sectionsCount > 0 else { return }
-        guard let itemsCount = collectionView?.numberOfItems(inSection: sectionsCount - 1), itemsCount > 0 else { return }
-        
-        let indexPath = IndexPath(item: itemsCount - 1, section: sectionsCount - 1)
-        collectionView?.scrollToItem(at: indexPath, at: .bottom, animated: true)
+        DispatchQueue.main.async {
+            guard let sectionsCount = self.collectionView?.numberOfSections, sectionsCount > 0 else { return }
+            guard let itemsCount = self.collectionView?.numberOfItems(inSection: sectionsCount - 1), itemsCount > 0 else { return }
+            
+            let indexPath = IndexPath(item: itemsCount - 1, section: sectionsCount - 1)
+            self.collectionView?.scrollToItem(at: indexPath, at: .bottom, animated: true)
+        }
     }
     
     private func fetchPhoto(url: String) {
@@ -234,6 +241,48 @@ class MasterCollectionViewController: UICollectionViewController, UIImagePickerC
         }
     }
     
+    private func configureLongPressGestureRecognizer() {
+        let longPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(gestureReconizer:)))
+        longPressGestureRecognizer.minimumPressDuration = 0.5
+        longPressGestureRecognizer.delaysTouchesBegan = true
+        longPressGestureRecognizer.delegate = self
+        self.collectionView?.addGestureRecognizer(longPressGestureRecognizer)
+    }
+    
+    
+    @objc func handleLongPress(gestureReconizer: UILongPressGestureRecognizer) {
+        if gestureReconizer.state != UIGestureRecognizerState.ended {
+            return
+        }
+        
+        let p = gestureReconizer.location(in: self.collectionView)
+        let indexPath = self.collectionView?.indexPathForItem(at: p)
+        
+        if let index = indexPath?.row {
+            deleteAsset(by: index)
+        } else {
+            print("Could not find index path")
+        }
+    }
+    
+    func deleteAsset(by index: Int) {
+        let completion = { (success: Bool, error: Error?) -> Void in
+            if success {
+                print("removed asset by index \(index) successfully")
+            } else {
+                print("can't remove asset: \(String(describing: error))")
+            }
+        }
+        
+        if fetchCollection.count > 0 {
+            // Delete asset from library
+            PHPhotoLibrary.shared().performChanges({ [weak self] in
+                let asset = self?.fetchCollection[index]
+                PHAssetChangeRequest.deleteAssets([asset!] as NSArray)
+                }, completionHandler: completion)
+        }
+    }
+    
     // MARK: - Animation
     
     func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationControllerOperation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
@@ -256,6 +305,10 @@ extension MasterCollectionViewController: PHPhotoLibraryChangeObserver {
         DispatchQueue.main.sync {
             // new fetch result
             fetchResult = changes.fetchResultAfterChanges
+            fetchCollection = []
+            for i in 0..<fetchResult.count {
+                fetchCollection.append(fetchResult[i])
+            }
             if changes.hasIncrementalChanges {
                 // If we have incremental diffs, animate them in the collection view
                 guard let collectionView = self.collectionView else { fatalError() }

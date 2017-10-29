@@ -15,7 +15,8 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
 
     // MARK: - Properties
     var selectedAsset = PHAsset()
-    var fetchResult = PHFetchResult<PHAsset>()
+    //var fetchResult = PHFetchResult<PHAsset>()
+    var fetchCollection: [PHAsset] = []
     var currentIndex = 0
     private var slides: [Slide] = []
     
@@ -40,7 +41,8 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
                                                object: nil)
         
         
-        let count = fetchResult.count
+        //let count = fetchResult.count
+        let count = fetchCollection.count
         pagesScrollView.contentSize = CGSize(width: pagesScrollView.bounds.width * CGFloat(count), height: pagesScrollView.bounds.height)
         
         for _ in 0..<count {
@@ -63,7 +65,7 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        pagesScrollView.contentSize = CGSize(width: pagesScrollView.bounds.width * CGFloat(fetchResult.count), height: pagesScrollView.bounds.height)
+        pagesScrollView.contentSize = CGSize(width: pagesScrollView.bounds.width * CGFloat(fetchCollection.count), height: pagesScrollView.bounds.height)
         
         for (index, slide) in slides.enumerated() {
             slide.frame = CGRect(x: pagesScrollView.bounds.width * CGFloat(index),
@@ -86,16 +88,16 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let position = Int(scrollView.contentOffset.x / scrollView.bounds.size.width)
         if position == currentPosition { return }
-        if position < 0 || position >= fetchResult.count { return }
+        if position < 0 || position >= fetchCollection.count { return }
         currentPosition = position
         
         // set min/max borders for downloaded images
         let minIndex = max(0, position - shiftForFetchingAssets)
-        let maxIndex = min(position + shiftForFetchingAssets, fetchResult.count-1)
+        let maxIndex = min(position + shiftForFetchingAssets, fetchCollection.count-1)
         
         // - clear images goes beyond currentPosition ±shift
         // - if image in the currentPosition ±shift - fetch it
-        for index in 0..<fetchResult.count {
+        for index in 0..<fetchCollection.count {
             if index < minIndex || index > maxIndex {
                 slides[index].item?.image = nil
             } else {
@@ -139,10 +141,10 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
             }
         }
 
-        if fetchResult.count > 0 {
+        if fetchCollection.count > 0 {
             // Delete asset from library
             PHPhotoLibrary.shared().performChanges({ [weak self] in
-                let asset = self?.fetchResult.object(at: (self?.currentPosition)!)
+                let asset = self?.fetchCollection[(self?.currentPosition)!]
                 PHAssetChangeRequest.deleteAssets([asset!] as NSArray)
                 }, completionHandler: completion)
         }
@@ -167,7 +169,7 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
     func fetchImage(at index: Int) {
         guard slides[index].item?.image == nil else { return }
         
-        let asset = fetchResult.object(at: index)
+        let asset = fetchCollection[index]
         let options = PHImageRequestOptions()
         options.deliveryMode = .highQualityFormat
         
@@ -192,7 +194,7 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
         pagesScrollView.contentOffset = CGPoint(x: offsetX, y:0)
     }
     
-    // MARK: - AppDidEnterBackground
+    // MARK: - AppDidEnterBackground - save titles of photos by Manager
     @objc private func applicationDidEnterBackground() {
         PhotosManager.sharedInstance.save()
     }

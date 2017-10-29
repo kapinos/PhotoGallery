@@ -5,7 +5,7 @@
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13174"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -47,8 +47,8 @@
                                                 <constraint firstAttribute="height" constant="30" id="6yK-sR-FRP"/>
                                             </constraints>
                                         </view>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3HE-Ac-Qse">
-                                            <rect key="frame" x="0.0" y="71" width="100" height="28.5"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3HE-Ac-Qse">
+                                            <rect key="frame" x="0.0" y="99.5" width="100" height="0.0"/>
                                             <fontDescription key="fontDescription" name="AvenirNextCondensed-Regular" family="Avenir Next Condensed" pointSize="20"/>
                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
@@ -70,6 +70,7 @@
                                     <constraint firstAttribute="bottom" secondItem="Rko-tv-hov" secondAttribute="bottom" id="vsC-ct-ayl"/>
                                 </constraints>
                                 <connections>
+                                    <outlet property="grayView" destination="Rko-tv-hov" id="6F7-jq-Bbp"/>
                                     <outlet property="imageView" destination="lfw-ke-m7g" id="7t5-Zj-6DS"/>
                                     <outlet property="titleLable" destination="3HE-Ac-Qse" id="sf0-BN-1Sg"/>
                                     <segue destination="xdA-cI-9Lc" kind="show" identifier="showItemDetail" id="iW9-Md-1ds"/>
@@ -85,7 +86,7 @@
                     <navigationItem key="navigationItem" title="PhotoGallery" id="y15-nY-fI6">
                         <barButtonItem key="leftBarButtonItem" systemItem="search" id="5AL-Fr-3zd">
                             <connections>
-                                <action selector="addButtonPressed:" destination="vwa-qs-EjX" id="Jys-rY-GTb"/>
+                                <action selector="searchButtonPressed:" destination="vwa-qs-EjX" id="jzb-Q6-blH"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="camera" id="WZV-oW-j1P">
