@@ -196,7 +196,8 @@ class MasterCollectionViewController: UICollectionViewController, UIImagePickerC
     //  FlowLayout
     private func configureLayoutGrid() {
         let inset: CGFloat = 10.0
-        let itemsSize = UIScreen.main.bounds.width - inset * 4 // left + rigt + betweenItems * 2
+        let minSize = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height) // select min side of device
+        let itemsSize = minSize - inset * 4 // left + rigt + betweenItems * 2
         let itemSize = itemsSize / 3
         
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
@@ -248,7 +249,6 @@ class MasterCollectionViewController: UICollectionViewController, UIImagePickerC
         longPressGestureRecognizer.delegate = self
         self.collectionView?.addGestureRecognizer(longPressGestureRecognizer)
     }
-    
     
     @objc func handleLongPress(gestureReconizer: UILongPressGestureRecognizer) {
         if gestureReconizer.state != UIGestureRecognizerState.ended {
